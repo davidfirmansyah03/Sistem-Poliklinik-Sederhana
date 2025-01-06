@@ -320,11 +320,10 @@ class Proses extends CI_Model
     }
 
     // Mengecek apakah jadwal dengan hari dan jam mulai yang sama sudah ada
-    public function check_existing_jadwal($id_dokter, $hari, $jam_mulai, $id_jadwal = null)
+    public function check_existing_jadwal($id_dokter, $hari, $id_jadwal = null)
     {
         $this->db->where('id_dokter', $id_dokter);
         $this->db->where('hari', $hari);
-        $this->db->where('jam_mulai', $jam_mulai);
 
         if ($id_jadwal) {
             $this->db->where('id !=', $id_jadwal); // Jangan cek jadwal yang sedang diedit
