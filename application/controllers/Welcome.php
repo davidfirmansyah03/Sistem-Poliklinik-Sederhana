@@ -574,7 +574,7 @@ class Welcome extends CI_Controller
 
 		// Validasi untuk memastikan tidak ada duplikasi jadwal
 		$this->load->model('Proses');
-		$is_jadwal_exist = $this->Proses->check_existing_jadwal($id_dokter, $hari, $jam_mulai, $id_jadwal);
+		$is_jadwal_exist = $this->Proses->check_existing_jadwal($id_dokter, $hari, $id_jadwal);
 
 		if ($is_jadwal_exist) {
 			$this->session->set_flashdata('error', 'Jadwal yang sama sudah ada!');
