@@ -85,6 +85,13 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="<?= site_url('welcome/konsultasi_dokter'); ?>" class="nav-link">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Konsultasi</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="<?= site_url('welcome/profil_dokter'); ?>" class="nav-link">
                             <i class="nav-icon fas fa-user"></i>
                             <p>Profil</p>
@@ -111,6 +118,12 @@
                         <a href="<?= site_url('welcome/riwayat_daftar_poli'); ?>" class="nav-link">
                             <i class="nav-icon fas fa-notes-medical"></i>
                             <p>Riwayat Daftar Poli</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= site_url('welcome/konsultasi_pasien'); ?>" class="nav-link">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Konsultasi</p>
                         </a>
                     </li>
                 <?php endif; ?>

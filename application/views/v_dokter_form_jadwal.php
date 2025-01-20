@@ -88,7 +88,7 @@
                                         <th>Jam Mulai</th>
                                         <th>Jam Selesai</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

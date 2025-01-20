@@ -39,7 +39,7 @@
                                         <th>Keluhan</th>
                                         <th>Tanggal Daftar</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
