@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 27, 2024 at 03:32 AM
+-- Generation Time: Jan 20, 2025 at 05:07 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -158,6 +158,29 @@ INSERT INTO `jadwal_periksa` (`id`, `id_dokter`, `hari`, `jam_mulai`, `jam_seles
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `konsultasi`
+--
+
+CREATE TABLE `konsultasi` (
+  `id` int(11) NOT NULL,
+  `id_pasien` int(11) NOT NULL,
+  `id_dokter` int(11) NOT NULL,
+  `tgl_konsultasi` date NOT NULL,
+  `pertanyaan` text NOT NULL,
+  `tanggapan` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `konsultasi`
+--
+
+INSERT INTO `konsultasi` (`id`, `id_pasien`, `id_dokter`, `tgl_konsultasi`, `pertanyaan`, `tanggapan`) VALUES
+(2, 1, 5, '2025-01-20', 'Halo', 'Ya halo bro'),
+(3, 1, 5, '2025-01-19', 'Yo bros', 'Yoi mamen');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `obat`
 --
 
@@ -298,6 +321,12 @@ ALTER TABLE `jadwal_periksa`
   ADD KEY `id_dokter` (`id_dokter`);
 
 --
+-- Indexes for table `konsultasi`
+--
+ALTER TABLE `konsultasi`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `obat`
 --
 ALTER TABLE `obat`
@@ -355,6 +384,12 @@ ALTER TABLE `dokter`
 --
 ALTER TABLE `jadwal_periksa`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `konsultasi`
+--
+ALTER TABLE `konsultasi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `obat`

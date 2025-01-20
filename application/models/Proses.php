@@ -649,7 +649,6 @@ class Proses extends CI_Model
         return $query->result_array(); // Banyak data obat
     }
 
-
     public function update_riwayat($periksa_id, $data)
     {
         // Update data riwayat pemeriksaan berdasarkan ID pemeriksaan
@@ -657,4 +656,64 @@ class Proses extends CI_Model
         return $this->db->update('periksa', $data);
     }
 
+    public function get_riwayat_konsultasi_pasien($id_pasien)
+    {
+        $this->db->select('kon.id, kon.tgl_konsultasi, kon.pertanyaan, kon.tanggapan, dokter.nama');
+        $this->db->from('konsultasi kon');
+        $this->db->join('dokter', 'kon.id_dokter = dokter.id');
+        $this->db->where('kon.id_pasien', $id_pasien);
+        $this->db->order_by('kon.tgl_konsultasi', 'DESC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function get_list_dokter()
+    {
+        $this->db->select('dokter.id, dokter.nama, poli.nama_poli as poli');
+        $this->db->from('dokter');
+        $this->db->join('poli', 'dokter.id_poli = poli.id', 'left');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
+    public function insert_konsultasi($data)
+    {
+        return $this->db->insert('konsultasi', $data);
+    }
+
+    public function get_konsultasi_by_id($id)
+    {
+        $this->db->select('*');
+        $this->db->from('konsultasi');
+        $this->db->where('id', $id);
+        return $this->db->get()->row_array();
+    }
+
+    public function update_konsultasi($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('konsultasi', $data);
+    }
+
+    public function delete_konsultasi($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->delete('konsultasi');
+    }
+
+    public function get_konsultasi_by_dokter($id_dokter)
+    {
+        $this->db->select('kon.id, kon.tgl_konsultasi, pasien.nama as nama_pasien, kon.pertanyaan, kon.tanggapan');
+        $this->db->from('konsultasi kon');
+        $this->db->join('pasien', 'kon.id_pasien = pasien.id');
+        $this->db->where('kon.id_dokter', $id_dokter);
+        $this->db->order_by('kon.tgl_konsultasi', 'DESC');
+        return $this->db->get()->result_array();
+    }
+
+    public function update_tanggapan($id, $tanggapan)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('konsultasi', ['tanggapan' => $tanggapan]);
+    }
 }

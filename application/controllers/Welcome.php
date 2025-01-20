@@ -347,7 +347,7 @@ class Welcome extends CI_Controller
 	// Tutup Kelola Obat -->
 	// Tutup Admin -->
 
-	// Pasien
+	// Controller Pasien
 	// Mendaftar Poli -->
 	public function daftar_poli()
 	{
@@ -448,7 +448,94 @@ class Welcome extends CI_Controller
 	}
 
 	// Tutup Riwayat Daftar Poli -->
-	// Tutup Pasien -->
+
+	// Konsultasi Pasien
+	public function konsultasi_pasien($id = null)
+	{
+		// Pastikan hanya pasien yang bisa mengakses
+		if ($this->session->userdata('user_type') != 'Pasien') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+		// Ambil id_pasien dari session
+		$id_pasien = $this->session->userdata('user_id');
+
+		$data['list_dokter'] = $this->Proses->get_list_dokter();
+		$data['riwayat_konsultasi'] = $this->Proses->get_riwayat_konsultasi_pasien($id_pasien);
+
+		if ($id) {
+			$data['konsultasi'] = $this->Proses->get_konsultasi_by_id($id);
+			if (!$data['konsultasi'] || $data['konsultasi']['id_pasien'] != $id_pasien) {
+				$this->session->set_flashdata('error', 'Data tidak ditemukan.');
+				redirect('welcome/konsultasi_pasien');
+			}
+		}
+
+		// Load view riwayat daftar poli
+		$this->load->view('master/header');
+		$this->load->view('master/sidebar');
+		$this->load->view('v_pasien_konsultasi', $data);
+		$this->load->view('master/footer');
+	}
+
+	public function save_konsultasi()
+	{
+		if ($this->session->userdata('user_type') != 'Pasien') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+
+		$data = [
+			'id_pasien' => $this->session->userdata('user_id'),
+			'id_dokter' => $this->input->post('id_dokter'),
+			'tgl_konsultasi' => $this->input->post('tgl_konsultasi'),
+			'pertanyaan' => $this->input->post('pertanyaan'),
+		];
+
+		$id = $this->input->post('id');
+
+		if ($id) {
+			// Update konsultasi
+			$this->Proses->update_konsultasi($id, $data);
+			$this->session->set_flashdata('success', 'Data konsultasi berhasil diperbarui.');
+		} else {
+			// Insert konsultasi baru
+			$this->Proses->insert_konsultasi($data);
+			$this->session->set_flashdata('success', 'Pertanyaan berhasil dikirim.');
+		}
+
+		redirect('welcome/konsultasi_pasien');
+	}
+
+	public function delete_konsultasi($id)
+	{
+		if ($this->session->userdata('user_type') != 'Pasien') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+
+		// Ambil data konsultasi berdasarkan ID
+		$konsultasi = $this->Proses->get_konsultasi_by_id($id);
+
+		// Pastikan konsultasi ada dan milik pasien yang sedang login
+		if (!$konsultasi || $konsultasi['id_pasien'] != $this->session->userdata('user_id')) {
+			$this->session->set_flashdata('error', 'Data tidak ditemukan atau Anda tidak berhak menghapus data ini.');
+			redirect('welcome/konsultasi_pasien');
+		}
+
+		// Hapus data konsultasi
+		$result = $this->Proses->delete_konsultasi($id);
+		if ($result) {
+			$this->session->set_flashdata('success', 'Data konsultasi berhasil dihapus.');
+		} else {
+			$this->session->set_flashdata('error', 'Gagal menghapus data konsultasi.');
+		}
+
+		redirect('welcome/konsultasi_pasien');
+	}
+
+	// Tutup Konsultasi Pasien
+	// Tutup Controller Pasien -->
 
 	// Dokter -->
 	// Profil Dokter -->
@@ -561,8 +648,6 @@ class Welcome extends CI_Controller
 		header('Content-Type: application/json');
 		echo json_encode(['success' => $success]);
 	}
-
-
 
 	public function tambah_jadwal_submit()
 	{
@@ -837,5 +922,84 @@ class Welcome extends CI_Controller
 		$this->session->set_flashdata('success', 'Password berhasil diperbarui');
 		redirect('welcome/ganti_password');
 	}
+
+	// Konsultasi Dokter
+	public function konsultasi_dokter($id = null)
+	{
+		// Pastikan hanya dokter yang bisa mengakses
+		if ($this->session->userdata('user_type') != 'Dokter') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+
+		// Ambil id_dokter dari session
+		$id_dokter = $this->session->userdata('user_id');
+
+		// Ambil data konsultasi untuk dokter
+		$data['konsultasi_list'] = $this->Proses->get_konsultasi_by_dokter($id_dokter);
+
+		// Jika ada ID, ambil data konsultasi untuk diisi tanggapan
+		if ($id) {
+			$data['konsultasi'] = $this->Proses->get_konsultasi_by_id($id);
+			if (!$data['konsultasi'] || $data['konsultasi']['id_dokter'] != $id_dokter) {
+				$this->session->set_flashdata('error', 'Data tidak ditemukan.');
+				redirect('welcome/konsultasi_dokter');
+			}
+		}
+
+		// Load view konsultasi dokter
+		$this->load->view('master/header');
+		$this->load->view('master/sidebar');
+		$this->load->view('v_dokter_konsultasi', $data);
+		$this->load->view('master/footer');
+	}
+
+
+	public function tanggapi_konsultasi($id)
+	{
+		// Pastikan hanya dokter yang bisa mengakses
+		if ($this->session->userdata('user_type') != 'Dokter') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+
+		// Ambil data konsultasi berdasarkan ID
+		$data['konsultasi'] = $this->Proses->get_konsultasi_by_id($id);
+
+		// Validasi data konsultasi
+		if (!$data['konsultasi'] || $data['konsultasi']['id_dokter'] != $this->session->userdata('user_id')) {
+			$this->session->set_flashdata('error', 'Data tidak ditemukan.');
+			redirect('welcome/konsultasi_dokter');
+		}
+
+		// Load form tanggapan
+		$this->load->view('master/header');
+		$this->load->view('master/sidebar');
+		$this->load->view('v_tanggapan_konsultasi', $data);
+		$this->load->view('master/footer');
+	}
+
+	public function save_tanggapan()
+	{
+		if ($this->session->userdata('user_type') != 'Dokter') {
+			$this->session->set_flashdata('error', 'Akses ditolak');
+			redirect('auth/login');
+		}
+
+		$id = $this->input->post('id');
+		$tanggapan = $this->input->post('tanggapan');
+
+		// Update atau tambah tanggapan
+		$result = $this->Proses->update_tanggapan($id, $tanggapan);
+		if ($result) {
+			$this->session->set_flashdata('success', 'Tanggapan berhasil disimpan.');
+		} else {
+			$this->session->set_flashdata('error', 'Gagal menyimpan tanggapan.');
+		}
+
+		redirect('welcome/konsultasi_dokter');
+	}
+	// Tutup Konsultasi Dokter
+
 	// Tutup Dokter -->
 }
